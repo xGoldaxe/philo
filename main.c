@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/11 11:28:26 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/13 17:55:05 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/13 18:52:08 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	print_mutex(char *content, t_philo *philo, char *color, int id)
 	res = 1;
 	pthread_mutex_lock(&philo->talk);
 	gettimeofday(&tv, NULL);
-	time = tv.tv_sec * MS + tv.tv_usec / MS;
+	time = (tv.tv_sec * MS * MS + tv.tv_usec) / MS;
 	if (first_time == 0)
 		first_time = time;
 	if (id == -1)

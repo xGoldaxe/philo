@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 11:50:48 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/13 18:00:34 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/13 18:29:49 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,10 @@ int	lock_forks(t_philo *philo, t_thinker *thinker)
 		pthread_mutex_lock(&philo->forks[fork_id].mutex);
 		res = print_mutex("has taken a fork(left)", philo, BLU, thinker->id);
 	}
-	//douille
 	eat_renewal(thinker);
 	res = print_mutex("is eating", thinker->philo, GRN, thinker->id);
 	add_times_eat(thinker);
-	usleep(philo->time_to_eat * MS);
+	new_usleep(philo->time_to_eat);
 	res = print_mutex("is sleeping", thinker->philo, CYN, thinker->id);
 	pthread_mutex_unlock(&philo->forks[thinker->id].mutex);
 	pthread_mutex_unlock(&philo->forks[fork_id].mutex);
@@ -81,12 +80,12 @@ void	*start_routine(void *entry)
 
 	thinker = (t_thinker *)entry;
 	if (thinker->id % 2)
-		usleep(thinker->philo->time_to_eat / 2 * MS);
+		new_usleep(thinker->philo->time_to_eat / 2);
 	while (verify_alive(thinker->philo))
 	{
 		if (!lock_forks(thinker->philo, thinker))
 			return (NULL);
-		usleep(thinker->philo->time_to_sleep * MS);
+		new_usleep(thinker->philo->time_to_sleep);
 		if (!print_mutex("is thinking", thinker->philo, YEL, thinker->id))
 			return (NULL);
 	}

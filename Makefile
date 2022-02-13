@@ -1,6 +1,7 @@
 SRC = main.c \
 ft_atoi.c \
 routine.c \
+new_usleep.c \
 
 CC = gcc
 

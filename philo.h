@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/11 11:27:37 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/13 17:41:03 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/13 18:28:55 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void				change_alive(t_philo *entry, int value);
 void				eat_renewal(t_thinker *thinker);
 int					verify_all_eats_enough(t_philo *philo);
 long unsigned int	get_time(void);
+void    			new_usleep(int ms);
 
 /* ROUTINE */
 void	*start_routine(void *entry);
