@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/11 11:27:37 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/13 14:11:56 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/13 17:41:03 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ typedef struct s_philo {
 	int					time_to_sleep;
 	int					time_must_eat;
 	int					all_alive;
+	int					*times_eat;
 	t_fork				*forks;
 	pthread_mutex_t		talk;
 	pthread_mutex_t		modify_philo;
@@ -58,11 +59,13 @@ typedef struct s_thinker {
 }	t_thinker;
 
 /* UTILS */
-int		ft_atoi(const char *nptr);
-int		print_mutex(char *content, t_philo *philo, char *color, int id);
-int		verify_alive(t_philo *entry);
-void	change_alive(t_philo *entry, int value);
-void	eat_renewal(t_thinker *thinker);
+int					ft_atoi(const char *nptr);
+int					print_mutex(char *content, t_philo *philo, char *color, int id);
+int					verify_alive(t_philo *entry);
+void				change_alive(t_philo *entry, int value);
+void				eat_renewal(t_thinker *thinker);
+int					verify_all_eats_enough(t_philo *philo);
+long unsigned int	get_time(void);
 
 /* ROUTINE */
 void	*start_routine(void *entry);
