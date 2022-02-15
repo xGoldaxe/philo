@@ -3,7 +3,9 @@ ft_atoi.c \
 routine.c \
 new_usleep.c \
 parsing.c \
+lock_forks.c \
 mutex_operations.c \
+create_threads.c \
 
 CC = gcc
 
