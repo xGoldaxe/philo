@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/15 12:47:27 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/15 16:27:35 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/15 16:44:43 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,21 +25,23 @@ int	print_mutex(char *content, t_philo *philo, char *color, int id)
 	time = (tv.tv_sec * MS * MS + tv.tv_usec) / MS;
 	if (first_time == 0)
 		first_time = time;
-	if (id != -2)
+	if (id == -2)
 	{
-		if (id == -1)
-		{
-			printf("(ms:%lu) %s====> %s <====\n\033[0;37m",
-				(time - first_time), color, content);
-			pthread_mutex_unlock(&philo->talk);
-			return (res);
-		}
-		if (!verify_alive(philo) || verify_all_eats_enough(philo) == 0)
-			res = -1;
-		else
-			printf("(ms:%lu) (%d) %s | %s\n\033[0;37m", (time - first_time),
-				id + 1, color, content);
+		pthread_mutex_unlock(&philo->talk);
+		return (res);
 	}
+	if (id == -1)
+	{
+		printf("(ms:%lu) %s====> %s <====\n\033[0;37m",
+			(time - first_time), color, content);
+		pthread_mutex_unlock(&philo->talk);
+		return (res);
+	}
+	if (!verify_alive(philo) || verify_all_eats_enough(philo) == 0)
+		res = -1;
+	else
+		printf("(ms:%lu) (%d) %s | %s\n\033[0;37m", (time - first_time),
+			id + 1, color, content);
 	pthread_mutex_unlock(&philo->talk);
 	return (res);
 }

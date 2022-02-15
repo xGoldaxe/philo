@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 11:50:48 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/15 16:27:56 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/15 17:20:20 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,9 @@ int	verify_eat_time(t_thinker *thinker)
 	philo = thinker->philo;
 	pthread_mutex_lock(&philo->modify_philo);
 	gettimeofday(&tv, NULL);
-	res = (tv.tv_sec * 1000 + tv.tv_usec / MS)
+	res = ((tv.tv_sec * 1000 + tv.tv_usec / MS)
 		- (philo->last_time_eat[thinker->id].tv_sec * 1000
-		+ philo->last_time_eat[thinker->id].tv_usec / MS)
-					> philo->time_to_die;
+		+ philo->last_time_eat[thinker->id].tv_usec / MS)) > philo->time_to_die;
 	pthread_mutex_unlock(&philo->modify_philo);
 	return (res);
 }

@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/11 11:27:37 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/15 16:01:02 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/15 16:36:41 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ typedef struct s_philo {
 	int					time_must_eat;
 	int					all_alive;
 	int					error_occured;
+	int					mutex_create;
 	int					*times_eat;
 	struct timeval		*last_time_eat;
 	t_fork				*forks;
