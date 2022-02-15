@@ -2,6 +2,8 @@ SRC = main.c \
 ft_atoi.c \
 routine.c \
 new_usleep.c \
+parsing.c \
+mutex_operations.c \
 
 CC = gcc
 
@@ -34,7 +36,7 @@ all :
 	@make ${NAME}
 
 ${NAME} : $(OBJ)
-	@${CC} -o ${NAME} ${OBJ} -lpthread -D_REENTRANT
+	${CC} -o ${NAME} ${OBJ} -lpthread -D_REENTRANT
 	@printf "${B_GREEN}==>{${NAME}} LINKED SUCCESFULLY<==${NONE}\n"
 
 clean :

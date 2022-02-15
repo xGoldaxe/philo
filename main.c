@@ -6,101 +6,82 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/11 11:28:26 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/13 18:52:08 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/15 16:26:53 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	print_mutex(char *content, t_philo *philo, char *color, int id)
-{
-	struct timeval				tv;
-	int							res;
-	long unsigned int			time;
-	static long unsigned int	first_time = 0;
-
-	res = 1;
-	pthread_mutex_lock(&philo->talk);
-	gettimeofday(&tv, NULL);
-	time = (tv.tv_sec * MS * MS + tv.tv_usec) / MS;
-	if (first_time == 0)
-		first_time = time;
-	if (id == -1)
-	{
-		printf("(ms:%lu) %s====> %s <====\n\033[0;37m", (time - first_time), color, content);
-		pthread_mutex_unlock(&philo->talk);
-		return (res);
-	}
-	if (!verify_alive(philo) || verify_all_eats_enough(philo) == 0)
-		res = -1;
-	else
-		printf("(ms:%lu) (%d) %s | %s\n\033[0;37m", (time - first_time),
-			id + 1, color, content);		
-	pthread_mutex_unlock(&philo->talk);
-	return (res);
-}
-
-int	verify_all_eats_enough(t_philo *philo)
+int	create_threads(t_philo *philo, t_thinker *thinkers, pthread_t *threads,
+pthread_t *death_thread)
 {
 	int	i;
 
-	pthread_mutex_lock(&philo->modify_philo);
-	if (philo->time_must_eat == -1)
+	i = -1;
+	while (++i < philo->number_of_philo)
 	{
-		pthread_mutex_unlock(&philo->modify_philo);
-		return (1);
+		philo->times_eat[i] = 0;
+		philo->forks[i].state = 1;
+		if (pthread_mutex_init(&philo->forks[i].mutex, NULL))
+			return (-1);
 	}
-	i = 0;
-	while (i < philo->number_of_philo)
+	philo->philo_created = -1;
+	while (++philo->philo_created < philo->number_of_philo)
 	{
-		if (philo->times_eat[i] < philo->time_must_eat)
-		{
-			pthread_mutex_unlock(&philo->modify_philo);
-			return (1);
-		}
-		++i;
+		thinkers[philo->philo_created].id = philo->philo_created;
+		thinkers[philo->philo_created].philo = philo;
+		eat_renewal(&thinkers[philo->philo_created]);
+		if (pthread_create(&threads[philo->philo_created],
+				NULL, start_routine, &thinkers[philo->philo_created]) != 0)
+			return (-2);
 	}
-	pthread_mutex_unlock(&philo->modify_philo);
+	if (pthread_create(death_thread, NULL, dead_checker, thinkers))
+		return (-3);
+	return (1);
+}
+
+int	free_all(t_thinker *thinkers, pthread_t *threads, t_philo *philo)
+{
+	free(thinkers);
+	free(threads);
+	free(philo->forks);
+	free(philo->times_eat);
+	free(philo->last_time_eat);
 	return (0);
 }
 
-int	verify_alive(t_philo *philo)
+int	free_mutex(t_philo *philo)
 {
-	int	res;
+	int	i;
 
-	pthread_mutex_lock(&philo->modify_philo);
-	res = philo->all_alive;
-	pthread_mutex_unlock(&philo->modify_philo);
-	return (res);
+	pthread_mutex_destroy(&philo->talk);
+	pthread_mutex_destroy(&philo->modify_philo);
+	pthread_mutex_destroy(&philo->queue_mutex);
+	i = 0;
+	while (i < philo->philo_created)
+	{
+		pthread_mutex_destroy(&philo->forks[i].mutex);
+		++i;
+	}
+	return (0);
 }
 
-void	change_alive(t_philo *philo, int value)
+int	free_threads(t_philo *philo, t_thinker *thinkers, pthread_t *threads,
+pthread_t *death_thread)
 {
-	pthread_mutex_lock(&philo->modify_philo);
-	philo->all_alive = value;
-	pthread_mutex_unlock(&philo->modify_philo);
-}
+	int	i;
 
-int	parsing(int argc, char **argv, t_philo *philo)
-{
-	if (argc < 5)
+	i = 0;
+	while (i < philo->philo_created)
 	{
-		write(2, "error\n", 6);
-		return (0);
+		pthread_join(threads[i], NULL);
+		++i;
 	}
-	else
-	{
-		philo->number_of_philo = ft_atoi(argv[1]);
-		philo->time_to_die = ft_atoi(argv[2]);
-		philo->time_to_eat = ft_atoi(argv[3]);
-		philo->time_to_sleep = ft_atoi(argv[4]);
-		if (argc >= 6)
-			philo->time_must_eat = ft_atoi(argv[5]);
-		else
-			philo->time_must_eat = -1;
-		philo->all_alive = 1;
-	}
-	return (1);
+	if (philo->error_occured == 0)
+		pthread_join(*death_thread, NULL);
+	free_mutex(philo);
+	free_all(thinkers, threads, philo);
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -109,49 +90,39 @@ int	main(int argc, char **argv)
 	pthread_t		*threads;
 	pthread_t		death_thread;
 	t_thinker		*thinkers;
-	int				i;
 
 	if (!parsing(argc, argv, &philo))
 		return (-1);
+	//* need protection
 	pthread_mutex_init(&philo.talk, NULL);
 	pthread_mutex_init(&philo.modify_philo, NULL);
+	pthread_mutex_init(&philo.queue_mutex, NULL);
+	pthread_mutex_init(&philo.start, NULL);
+	//** need protection
+	thinkers = NULL;
+	threads = NULL;
+	philo.times_eat = NULL;
+	philo.forks = NULL;
+	philo.last_time_eat = NULL;
 	thinkers = malloc(sizeof(t_thinker) * philo.number_of_philo);
 	threads = malloc(sizeof(pthread_t) * philo.number_of_philo);
 	philo.times_eat = malloc(sizeof(int) * philo.number_of_philo);
-	//*definie forks
+	philo.last_time_eat = malloc(sizeof(struct timeval)
+			* philo.number_of_philo);
 	philo.forks = malloc(sizeof(t_fork) * philo.number_of_philo);
-	i = 0;
-	while (i < philo.number_of_philo)
+	if (!thinkers || !threads || !philo.times_eat || !philo.forks
+		|| !philo.last_time_eat)
+		return (free_all(thinkers, threads, &philo));
+	/***/
+	print_mutex("hey", &philo, "e", -2);
+	philo.error_occured = 0;
+	pthread_mutex_lock(&philo.start);
+	if (create_threads(&philo, thinkers, threads, &death_thread) != 1)
 	{
-		philo.times_eat[i] = 0;
-		philo.forks[i].state = 1;
-		pthread_mutex_init(&philo.forks[i].mutex, NULL);
-		++i;
+		philo.error_occured = 1;
+		write(1, "error occured\n", 14);
 	}
-	i = 0;
-	while (i < philo.number_of_philo)
-	{
-		thinkers[i].id = i;
-		thinkers[i].philo = &philo;
-		pthread_mutex_init(&thinkers[i].mutex, NULL);
-		eat_renewal(&thinkers[i]);
-		pthread_create(&threads[i], NULL, start_routine, &thinkers[i]);
-		++i;
-	}
-	pthread_create(&death_thread, NULL, dead_checker, thinkers);
-	i = 0;
-	// return (0);
-	while (i < philo.number_of_philo)
-	{
-		pthread_join(threads[i], NULL);
-		++i;
-	}
-	pthread_join(death_thread, NULL);
-	pthread_mutex_destroy(&philo.talk);
-	//*
-	free(thinkers);
-	free(threads);
-	free(philo.forks);
-	free(philo.times_eat);
+	pthread_mutex_unlock(&philo.start);
+	free_threads(&philo, thinkers, threads, &death_thread);
 	return (0);
 }
