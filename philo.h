@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/11 11:27:37 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/15 17:39:47 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/16 12:00:43 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ long unsigned int	get_time(void);
 void				new_usleep(int ms);
 int					parsing(int argc, char **argv, t_philo *philo);
 void				add_times_eat(t_thinker *thinker);
-int					verify_eat_time(t_thinker *thinker);
+int					erify_eat_time(t_thinker *thinker, int delay);
 int					create_threads(t_philo *philo, t_thinker *thinkers,
 						pthread_t *threads, pthread_t *death_thread);
 

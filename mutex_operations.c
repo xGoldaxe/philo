@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/15 12:47:27 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/15 17:29:19 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/16 11:57:42 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	print_mutex(char *content, t_philo *philo, char *color, int id)
 	if (!verify_alive(philo) || verify_all_eats_enough(philo) == 0)
 		res = -1;
 	else
-		printf("(ms:%lu) (%d) %s | %s\n\033[0;37m", (time - first_time),
+		printf("%lu %d %s%s\n\033[0;37m", (time - first_time),
 			id + 1, color, content);
 	return (pthread_mutex_unlock(&philo->talk), res);
 }
