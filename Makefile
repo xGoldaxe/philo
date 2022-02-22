@@ -6,6 +6,7 @@ parsing.c \
 lock_forks.c \
 mutex_operations.c \
 create_threads.c \
+utils.c \
 
 CC = gcc
 

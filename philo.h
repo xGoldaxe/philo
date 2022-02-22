@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/11 11:27:37 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/16 12:00:43 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/22 15:05:05 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ void				add_times_eat(t_thinker *thinker);
 int					erify_eat_time(t_thinker *thinker, int delay);
 int					create_threads(t_philo *philo, t_thinker *thinkers,
 						pthread_t *threads, pthread_t *death_thread);
+int					ft_strlen(char *str);
+int					ft_strcmp(char *s1, char *s2);
 
 /* ROUTINE */
 void				*start_routine(void *entry);
