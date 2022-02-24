@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 11:50:48 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/24 10:24:54 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/24 10:27:05 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	*start_routine(void *entry)
 {
 	t_thinker		*thkr;
 
-	thkr = (t_thkr *)entry;
+	thkr = (t_thinker *)entry;
 	pthread_mutex_lock(&thkr->philo->start);
 	pthread_mutex_unlock(&thkr->philo->start);
 	if (thkr->philo->number_of_philo == 1)
