@@ -6,7 +6,7 @@
 /*   By: pleveque <pleveque@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 11:50:48 by pleveque          #+#    #+#             */
-/*   Updated: 2022/02/16 12:52:44 by pleveque         ###   ########.fr       */
+/*   Updated: 2022/02/24 10:24:54 by pleveque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,29 +45,29 @@ int	verify_eat_time(t_thinker *thinker, int delay)
 
 void	*start_routine(void *entry)
 {
-	t_thinker		*thinker;
+	t_thinker		*thkr;
 
-	thinker = (t_thinker *)entry;
-	pthread_mutex_lock(&thinker->philo->start);
-	pthread_mutex_unlock(&thinker->philo->start);
-	if (thinker->philo->number_of_philo == 1)
+	thkr = (t_thkr *)entry;
+	pthread_mutex_lock(&thkr->philo->start);
+	pthread_mutex_unlock(&thkr->philo->start);
+	if (thkr->philo->number_of_philo == 1)
 		return (NULL);
-	if (thinker->id % 2)
-		new_usleep(thinker->philo->time_to_eat / 2);
-	if (thinker->philo->number_of_philo % 2
-		&& (thinker->id + 1) == thinker->philo->number_of_philo)
-		new_usleep(thinker->philo->time_to_eat
-			+ thinker->philo->time_to_eat / 2);
-	while (verify_alive(thinker->philo))
+	if (thkr->id % 2)
+		new_usleep(thkr->philo->time_to_eat / 2);
+	if (thkr->philo->number_of_philo % 2
+		&& (thkr->id + 1) == thkr->philo->number_of_philo)
+		new_usleep(thkr->philo->time_to_eat + thkr->philo->time_to_eat / 2);
+	while (verify_alive(thkr->philo))
 	{
-		if (!lock_forks(thinker->philo, thinker))
+		if (!lock_forks(thkr->philo, thkr))
 			return (NULL);
-		new_usleep(thinker->philo->time_to_sleep);
-		if (!print_mutex("is thinking", thinker->philo, YEL, thinker->id))
+		new_usleep(thkr->philo->time_to_sleep);
+		if (!print_mutex("is thinking", thkr->philo, YEL, thkr->id))
 			return (NULL);
-		if (thinker->philo->number_of_philo % 2)
-			usleep((thinker->philo->time_to_eat * 2
-					- thinker->philo->time_to_sleep) * 1000);
+		if (thkr->philo->number_of_philo % 2)
+			if (thkr->philo->time_to_eat >= thkr->philo->time_to_sleep)
+				new_usleep(thkr->philo->time_to_eat * 2
+					- thkr->philo->time_to_sleep);
 	}
 	return (NULL);
 }
